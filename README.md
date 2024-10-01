@@ -22,7 +22,7 @@ This project is an interactive dashboard built using Streamlit that visualizes a
 1. Clone the repository:
    ```bash
    git clone https://github.com/danaffani/AirQualityStreamlit
-   cd <repository-directory>
+   cd AirQualityStreamlit
    ```
 
 2. Create a virtual environment (optional but recommended):
