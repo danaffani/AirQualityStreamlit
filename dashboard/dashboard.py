@@ -16,8 +16,6 @@ def main():
     st.header("Data Overview")
     st.write(data)
 
-    st.write("Columns in the dataset:", data.columns)
-
     st.header("Basic Statistics")
     st.write(data.describe())
 
