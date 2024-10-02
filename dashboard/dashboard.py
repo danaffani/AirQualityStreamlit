@@ -37,17 +37,19 @@ def main():
         plt.title("PM2.5 Levels Over Time")
         plt.xlabel("Date")
         plt.ylabel("PM2.5 Levels")
+        plt.legend(title='Station', bbox_to_anchor=(1.05, 1), loc='upper left')
         st.pyplot(plt)
 
     st.header("Relations Between Various Pollutants and PM2.5")
     pollutants = ['PM10', 'SO2', 'NO2', 'CO', 'O3']
     for pollutant in pollutants:
         if pollutant in data.columns:
-            plt.figure(figsize=(10, 5))
-            sns.scatterplot(data=data, x=pollutant, y='PM2.5', hue='station')
+            sample_data = data.sample(frac=0.1, random_state=1)
+            sns.regplot(data=sample_data, x=pollutant, y='PM2.5', scatter_kws={'s': 10}, line_kws={'color': 'red'})
             plt.title(f"Relation Between {pollutant} and PM2.5")
             plt.xlabel(pollutant)
             plt.ylabel("PM2.5 Levels")
+            plt.legend(title='Station', bbox_to_anchor=(1.05, 1), loc='upper left')
             st.pyplot(plt)
 
 if __name__ == "__main__":
