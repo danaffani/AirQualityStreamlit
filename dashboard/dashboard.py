@@ -13,19 +13,19 @@ def main():
     
     data = load_data()
 
-    st.header("Average Pollutants Across Stations")    
-    pollutants = ['PM2.5', 'PM10', 'SO2', 'NO2', 'CO', 'O3']    
-    for pollutant in pollutants:
-        if pollutant in data.columns:
-            avg_pollutant = data.groupby('station')[pollutant].mean().reset_index()
-            plt.figure(figsize=(10, 5))
-            sns.barplot(data=avg_pollutant, x='station', y=pollutant, palette='viridis')
-            plt.title(f'Average {pollutant} Levels Across Stations')
-            plt.xlabel('Station')
-            plt.ylabel(f'Average {pollutant} Levels')
-            plt.xticks(rotation=45)
-            plt.grid(axis='y')
-            st.pyplot(plt)
+    pollutants = ['PM2.5', 'PM10', 'SO2', 'NO2', 'CO', 'O3']
+    selected_pollutant = st.selectbox("Select a pollutant to visualize:", pollutants)
+
+    if selected_pollutant in data.columns:
+        avg_pollutant = data.groupby('station')[selected_pollutant].mean().reset_index()
+        plt.figure(figsize=(10, 5))
+        sns.barplot(data=avg_pollutant, x='station', y=selected_pollutant, palette='viridis')
+        plt.title(f'Average {selected_pollutant} Levels Across Stations')
+        plt.xlabel('Station')
+        plt.ylabel(f'Average {selected_pollutant} Levels')
+        plt.xticks(rotation=45)
+        plt.grid(axis='y')
+        st.pyplot(plt)
 
     st.title("Pertanyaan 1")
     st.header("Percentage of Time PM2.5 Exceeded WHO Threshold (2015)")
