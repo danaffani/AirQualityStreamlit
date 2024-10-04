@@ -12,45 +12,73 @@ def main():
     st.title("Dashboard Data Analysis")
     
     data = load_data()
-    
-    st.header("Data Overview")
-    st.write(data)
 
-    st.header("Basic Statistics")
-    st.write(data.describe())
-
-    st.header("Filter Data by Station")
-    unique_stations = data['station'].unique()
-    selected_station = st.selectbox("Select a Station", unique_stations)
-    
-    filtered_station_data = data[data['station'] == selected_station]
-    st.write(filtered_station_data)
-
-    st.header("Average PM2.5 Value Across Stations")
-    avg_pm25 = data.groupby('station')['PM2.5'].mean().reset_index()
-    st.write(avg_pm25)
-
-    st.header("PM2.5 Levels Over Time")
-    if 'PM2.5' in data.columns and 'day' in data.columns:
-        plt.figure(figsize=(10, 5))
-        sns.lineplot(data=data, x='day', y='PM2.5', hue='station')
-        plt.title("PM2.5 Levels Over Time")
-        plt.xlabel("Date")
-        plt.ylabel("PM2.5 Levels")
-        plt.legend(title='Station', bbox_to_anchor=(1.05, 1), loc='upper left')
-        st.pyplot(plt)
-
-    st.header("Relations Between Various Pollutants and PM2.5")
-    pollutants = ['PM10', 'SO2', 'NO2', 'CO', 'O3']
+    st.header("Average Pollutants Across Stations")    
+    pollutants = ['PM2.5', 'PM10', 'SO2', 'NO2', 'CO', 'O3']    
     for pollutant in pollutants:
         if pollutant in data.columns:
-            sample_data = data.sample(frac=0.1, random_state=1)
-            sns.regplot(data=sample_data, x=pollutant, y='PM2.5', scatter_kws={'s': 10}, line_kws={'color': 'red'})
-            plt.title(f"Relation Between {pollutant} and PM2.5")
-            plt.xlabel(pollutant)
-            plt.ylabel("PM2.5 Levels")
-            plt.legend(title='Station', bbox_to_anchor=(1.05, 1), loc='upper left')
+            avg_pollutant = data.groupby('station')[pollutant].mean().reset_index()
+            plt.figure(figsize=(10, 5))
+            sns.barplot(data=avg_pollutant, x='station', y=pollutant, palette='viridis')
+            plt.title(f'Average {pollutant} Levels Across Stations')
+            plt.xlabel('Station')
+            plt.ylabel(f'Average {pollutant} Levels')
+            plt.xticks(rotation=45)
+            plt.grid(axis='y')
             st.pyplot(plt)
+
+    st.title("Pertanyaan 1")
+    st.header("Percentage of Time PM2.5 Exceeded WHO Threshold (2015)")
+    
+    data['datetime'] = pd.to_datetime(data[['year', 'month', 'day', 'hour']])
+    data_2016 = data[data['datetime'].dt.year == 2015]
+    
+    threshold = 25  # threshold limit 4th intern target set by WHO
+    
+    results = data_2016.groupby('station').agg(
+        Total_Measurements=('PM2.5', 'count'),
+        Exceeding_Count=('PM2.5', lambda x: (x > threshold).sum())
+    ).reset_index()
+    
+    results['Percentage_Exceeding'] = (results['Exceeding_Count'] / results['Total_Measurements']) * 100
+    
+    plt.figure(figsize=(13, 6))
+    sns.barplot(data=results, x='station', y='Percentage_Exceeding', palette='viridis', hue='station')
+    plt.title('Percentage of Time PM2.5 Exceeded WHO Threshold (2015)')
+    plt.xlabel('Station')
+    plt.ylabel('Percentage Exceeding (%)')
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
+    plt.tight_layout()
+    st.pyplot(plt)
+
+    st.title("Pertanyaan 2")
+    st.header("Average PM2.5 Levels by Season Across Stations")
+    data['month'] = data['datetime'].dt.month
+
+    def get_season(month):
+        if month in [12, 1, 2]:
+            return 'Winter'
+        elif month in [3, 4, 5]:
+            return 'Spring'
+        elif month in [6, 7, 8]:
+            return 'Summer'
+        else:
+            return 'Fall'
+
+    data['season'] = data['month'].apply(get_season)
+    seasonal_pm25 = data.groupby(['station', 'season'])['PM2.5'].mean().reset_index()
+
+    plt.figure(figsize=(12, 6))
+    sns.barplot(data=seasonal_pm25, x='season', y='PM2.5', hue='station', palette='viridis')
+    plt.title('Average PM2.5 Levels by Season Across Stations')
+    plt.xlabel('Season')
+    plt.ylabel('Average PM2.5 (µg/m³)')
+    plt.xticks(rotation=45)
+    plt.legend(title='Station', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
     main()
