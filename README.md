@@ -49,11 +49,11 @@ This project is an interactive dashboard built using Streamlit that visualizes a
 
 1. Ensure that `main_data.csv` file is in the project directory, because this is the data the dashboard based off.
 2. Ensure that you are inside the root directory of the project (inside "AirQualityStreamlit" or "submission" folder).
-2. Run the Streamlit app:
+3. Run the Streamlit app:
    ```bash
    streamlit run dashboard/dashboard.py
    ```
-3. Open your web browser and navigate to `http://localhost:8501` to view the dashboard.
+4. Open your web browser and navigate to `http://localhost:8501` to view the dashboard.
 
 ## Data Source
 The dataset used in this project contains air quality measurements, including various pollutants and their concentrations over time. Ensure that the dataset is properly formatted and contains the necessary columns for analysis.
