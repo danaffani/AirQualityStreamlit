@@ -5,7 +5,10 @@ import seaborn as sns
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv('dashboard/main_data.csv')
+    try:
+        df = pd.read_csv('dashboard/main_data.csv')
+    except FileNotFoundError:
+        df = pd.read_csv('main_data.csv')
     return df
 
 def main():
